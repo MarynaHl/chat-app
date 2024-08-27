@@ -1,0 +1,5 @@
+MONGO_URI=mongodb+srv://Maryna_Hl:tlFX0YekSeFEDzeJ@cluster0.c9o70pa.mongodb.net/chatAppDB?retryWrites=true&w=majority&appName=Cluster0
+GOOGLE_CLIENT_ID=y901970989111-dbe06m3j1obffcttf2ltp4j4a47ht4a2.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+JWT_SECRET=your_jwt_secret
+PORT=5000

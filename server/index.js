@@ -2,9 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const passport = require('passport');
 const http = require('http');
-const { Server } = require('socket.io');
+const { Server } = require('socket.io'); // Переконайтеся, що ця лінія не закоментована
+const quoteService = require('./services/quoteService'); // Додаємо сервіс цитат
 
 dotenv.config();
 
@@ -19,13 +19,13 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+// Перевірка, чи завантажується MONGO_URI
+console.log('Mongo URI:', process.env.MONGO_URI);
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
-
-// Passport Config
-require('./config/passport')(passport);
 
 // Routes
 app.use('/api/chats', require('./routes/chats'));
@@ -35,8 +35,14 @@ app.use('/api/auth', require('./routes/auth'));
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  socket.on('new_message', (data) => {
-    io.emit('receive_message', data); // Send message to all connected clients
+  socket.on('send_message', async (data) => {
+    // Додаємо логіку авто-респонсу при отриманні нового повідомлення
+    const autoReply = await quoteService.getRandomQuote(); // Отримуємо цитату
+    io.emit('receive_message', { content: autoReply, sender: 'bot', chatId: data.chatId }); // Відправляємо цитату всім клієнтам
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
   });
 });
 
