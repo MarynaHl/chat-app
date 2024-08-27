@@ -26,8 +26,10 @@ function App() {
   return (
     <div className="app">
       <Header toggleSocket={toggleSocket} />
-      <ChatList chats={chats} setSelectedChat={setSelectedChat} />
-      {selectedChat && <ChatWindow chat={selectedChat} />}
+      <div className="main-content">
+        <ChatList chats={chats} setSelectedChat={setSelectedChat} />
+        {selectedChat && <ChatWindow chat={selectedChat} />}
+      </div>
       {isDialogOpen && <NewChatDialog setIsDialogOpen={setIsDialogOpen} />}
     </div>
   );

@@ -1,43 +1,47 @@
 import React, { useState } from 'react';
+import '../styles/main.css';
 
 function ChatWindow({ chat }) {
   const [messages, setMessages] = useState(chat.messages);
   const [newMessage, setNewMessage] = useState('');
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (newMessage.trim()) {
-      const updatedMessages = [...messages, { content: newMessage, sender: 'user' }];
-      setMessages(updatedMessages);
-
-      // Відправка повідомлення на сервер
-      const response = await fetch(`/api/chats/${chat._id}/message`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newMessage })
-      });
-
-      const autoReply = await response.json();
-      setMessages([...updatedMessages, { content: autoReply.content, sender: 'bot' }]);
+      const newMsg = {
+        id: messages.length + 1,
+        sender: 'You',
+        content: newMessage,
+        timestamp: new Date().toLocaleString(),
+      };
+      setMessages([...messages, newMsg]);
+      setNewMessage('');
     }
-    setNewMessage('');
   };
 
   return (
     <div className="chat-window">
-      <div className="messages">
-        {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.sender}`}>
-            <p>{msg.content}</p>
+      <div className="chat-header">
+        <h2>{chat.name}</h2>
+      </div>
+      <div className="chat-body">
+        {messages.map(message => (
+          <div key={message.id} className={`message ${message.sender === 'You' ? 'sent' : 'received'}`}>
+            <div className="message-content">
+              <div className="message-text">{message.content}</div>
+              <div className="message-timestamp">{message.timestamp}</div>
+            </div>
           </div>
         ))}
       </div>
-      <input
-        type="text"
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        placeholder="Type your message..."
-      />
-      <button onClick={sendMessage}>Send</button>
+      <div className="chat-footer">
+        <input
+          type="text"
+          value={newMessage}
+          onChange={e => setNewMessage(e.target.value)}
+          placeholder="Type your message"
+        />
+        <button onClick={sendMessage}>Send</button>
+      </div>
     </div>
   );
 }

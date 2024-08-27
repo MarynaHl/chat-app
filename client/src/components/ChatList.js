@@ -1,14 +1,21 @@
 import React from 'react';
+import '../styles/main.css';
 
 function ChatList({ chats, setSelectedChat }) {
   return (
     <div className="chat-list">
-      {chats.map((chat) => (
-        <div key={chat._id} onClick={() => setSelectedChat(chat)} className="chat-item">
-          <p>{chat.firstName} {chat.lastName}</p>
-          <p>Last message: {chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].content : 'No messages yet'}</p>
-        </div>
-      ))}
+      <input type="text" placeholder="Search or start new chat" />
+      <ul>
+        {chats.map(chat => (
+          <li key={chat.id} className="chat-item" onClick={() => setSelectedChat(chat)}>
+            <div className="chat-info">
+              <div className="chat-name">{chat.name}</div>
+              <div className="chat-last-message">{chat.lastMessage}</div>
+            </div>
+            <div className="chat-date">{chat.date}</div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
