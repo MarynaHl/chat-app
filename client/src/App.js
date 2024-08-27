@@ -1,26 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import './ChatApp.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+
 import ChatList from './components/ChatList';
 import ChatWindow from './components/ChatWindow';
-import Header from './components/Header';
-import './styles/main.css';
+import ChatInput from './components/ChatInput';
 
 function App() {
-  const [chats, setChats] = useState([]);
-  const [selectedChatId, setSelectedChatId] = useState(null);
+  const [selectedChat, setSelectedChat] = useState(null);
 
-  useEffect(() => {
-    fetch('/api/chats')
-      .then((res) => res.json())
-      .then((data) => setChats(data))
-      .catch((err) => console.error('Error fetching chats:', err));
-  }, []);
+  const handleChatSelect = (chat) => {
+    setSelectedChat(chat);
+  };
 
   return (
-    <div className="app">
-      <Header />
-      <div className="main-content">
-        <ChatList chats={chats} setChats={setChats} setSelectedChatId={setSelectedChatId} />
-        {selectedChatId && <ChatWindow chatId={selectedChatId} />}
+    <div className="App">
+      <header className="App-header">
+        <h1>Chat Application</h1>
+      </header>
+      <div className="chat-container">
+        <ChatList onChatSelect={handleChatSelect} />
+        <div className="chat-content">
+          {selectedChat ? (
+            <>
+              <ChatWindow chat={selectedChat} />
+              <ChatInput chat={selectedChat} />
+            </>
+          ) : (
+            <div className="no-chat-selected">
+              Select a chat to start messaging
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import NewChatDialog from './NewChatDialog';
-import '../styles/main.css';
+import ChatWindow from './ChatWindow';
 
-function ChatList({ chats, setChats, setSelectedChatId }) {
+const ChatList = () => {
+  const [chats, setChats] = useState([
+    { id: 1, name: 'Alice Freeman', lastMessage: 'How was your meeting?', date: 'Aug 17, 2022' },
+    { id: 2, name: 'Josefina', lastMessage: 'Hi! No, I am going for a walk.', date: 'Aug 16, 2022' },
+    { id: 3, name: 'Velazquez', lastMessage: 'Hi! I am a little sad, tell me a joke please.', date: 'Aug 14, 2022' },
+    { id: 4, name: 'Piter', lastMessage: '', date: 'Aug 14, 2022' },
+  ]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentChat, setCurrentChat] = useState(null);
+  const [selectedChatId, setSelectedChatId] = useState(null);
 
   const handleNewChat = () => {
     setIsEditMode(false);
@@ -62,42 +70,45 @@ function ChatList({ chats, setChats, setSelectedChatId }) {
   );
 
   return (
-    <div className="chat-list">
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search or start new chat"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+    <div className="chat-app">
+      <div className="chat-list">
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search or start new chat"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="chat-list-items">
+          {filteredChats.map(chat => (
+            <div key={chat.id} className="chat-item" onClick={() => handleChatClick(chat.id)}>
+              <div className="chat-avatar">
+                <img src={`https://i.pravatar.cc/150?img=${chat.id}`} alt={`${chat.name}`} />
+              </div>
+              <div className="chat-info">
+                <div className="chat-name">{chat.name}</div>
+                <div className="chat-last-message">{chat.lastMessage}</div>
+              </div>
+              <div className="chat-date">{chat.date}</div>
+              <div className="chat-actions">
+                <button className="edit-button" onClick={(e) => {e.stopPropagation(); handleEditChat(chat);}}>Edit</button>
+                <button className="delete-button" onClick={(e) => {e.stopPropagation(); handleDeleteChat(chat.id);}}>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="new-chat-button" onClick={handleNewChat}>New Chat</button>
+        {isDialogOpen && (
+          <NewChatDialog
+            onSave={handleSaveChat}
+            onCancel={handleCancel}
+            isEditMode={isEditMode}
+            chat={currentChat}
+          />
+        )}
       </div>
-      <div className="chat-list-items">
-        {filteredChats.map(chat => (
-          <div key={chat.id} className="chat-item" onClick={() => handleChatClick(chat.id)}>
-            <div className="chat-avatar">
-              <img src={`https://i.pravatar.cc/150?img=${chat.id}`} alt={`${chat.name}`} />
-            </div>
-            <div className="chat-info">
-              <div className="chat-name">{chat.name}</div>
-              <div className="chat-last-message">{chat.lastMessage}</div>
-            </div>
-            <div className="chat-date">{chat.date}</div>
-            <div className="chat-actions">
-              <button className="edit-button" onClick={(e) => {e.stopPropagation(); handleEditChat(chat);}}>Edit</button>
-              <button className="delete-button" onClick={(e) => {e.stopPropagation(); handleDeleteChat(chat.id);}}>Delete</button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <button className="new-chat-button" onClick={handleNewChat}>New Chat</button>
-      {isDialogOpen && (
-        <NewChatDialog
-          onSave={handleSaveChat}
-          onCancel={handleCancel}
-          isEditMode={isEditMode}
-          chat={currentChat}
-        />
-      )}
+      {selectedChatId && <ChatWindow chatId={selectedChatId} />}
     </div>
   );
 }

@@ -1,41 +1,46 @@
-import React, { useState } from 'react';
-import '../styles/main.css';
+import React, { useState, useEffect } from 'react';
 
-function NewChatDialog({ onSave, onCancel, isEditMode, chat }) {
-  const [firstName, setFirstName] = useState(chat ? chat.firstName : '');
-  const [lastName, setLastName] = useState(chat ? chat.lastName : '');
+const NewChatDialog = ({ onSave, onCancel, isEditMode, chat }) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+
+  useEffect(() => {
+    if (isEditMode && chat) {
+      const [first, last] = chat.name.split(' ');
+      setFirstName(first);
+      setLastName(last);
+    }
+  }, [isEditMode, chat]);
 
   const handleSave = () => {
-    onSave({
-      id: chat ? chat.id : null,
-      firstName,
-      lastName,
-    });
+    onSave({ id: chat?.id, firstName, lastName });
   };
 
   return (
     <div className="new-chat-dialog">
-      <div className="dialog-content">
-        <h2>{isEditMode ? 'Edit Chat' : 'New Chat'}</h2>
+      <h2>{isEditMode ? 'Edit Chat' : 'New Chat'}</h2>
+      <div>
         <input
           type="text"
+          placeholder="First Name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First Name"
         />
+      </div>
+      <div>
         <input
           type="text"
+          placeholder="Last Name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
-          placeholder="Last Name"
         />
-        <div className="dialog-actions">
-          <button onClick={handleSave}>{isEditMode ? 'Save' : 'Create'}</button>
-          <button onClick={onCancel}>Cancel</button>
-        </div>
+      </div>
+      <div>
+        <button onClick={handleSave}>{isEditMode ? 'Update' : 'Save'}</button>
+        <button onClick={onCancel}>Cancel</button>
       </div>
     </div>
   );
-}
+};
 
 export default NewChatDialog;
