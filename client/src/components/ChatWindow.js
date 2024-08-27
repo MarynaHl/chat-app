@@ -1,46 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/main.css';
 
-function ChatWindow({ chat }) {
-  const [messages, setMessages] = useState(chat.messages);
-  const [newMessage, setNewMessage] = useState('');
-
-  const sendMessage = () => {
-    if (newMessage.trim()) {
-      const newMsg = {
-        id: messages.length + 1,
-        sender: 'You',
-        content: newMessage,
-        timestamp: new Date().toLocaleString(),
-      };
-      setMessages([...messages, newMsg]);
-      setNewMessage('');
-    }
-  };
-
+function ChatWindow({ chatId }) {
   return (
     <div className="chat-window">
-      <div className="chat-header">
-        <h2>{chat.name}</h2>
+      <div className="chat-window-header">
+        <h2>Chat {chatId}</h2>
       </div>
-      <div className="chat-body">
-        {messages.map(message => (
-          <div key={message.id} className={`message ${message.sender === 'You' ? 'sent' : 'received'}`}>
-            <div className="message-content">
-              <div className="message-text">{message.content}</div>
-              <div className="message-timestamp">{message.timestamp}</div>
-            </div>
-          </div>
-        ))}
+      <div className="chat-window-messages">
+        {/* Display messages based on chatId */}
       </div>
-      <div className="chat-footer">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={e => setNewMessage(e.target.value)}
-          placeholder="Type your message"
-        />
-        <button onClick={sendMessage}>Send</button>
+      <div className="chat-window-input">
+        <input type="text" placeholder="Type your message..." />
+        <button>Send</button>
       </div>
     </div>
   );

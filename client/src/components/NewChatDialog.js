@@ -1,37 +1,39 @@
 import React, { useState } from 'react';
+import '../styles/main.css';
 
-function NewChatDialog({ setIsDialogOpen }) {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+function NewChatDialog({ onSave, onCancel, isEditMode, chat }) {
+  const [firstName, setFirstName] = useState(chat ? chat.firstName : '');
+  const [lastName, setLastName] = useState(chat ? chat.lastName : '');
 
-  const createChat = async () => {
-    if (firstName && lastName) {
-      await fetch('/api/chats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName })
-      });
-      setIsDialogOpen(false);
-      window.location.reload();
-    }
+  const handleSave = () => {
+    onSave({
+      id: chat ? chat.id : null,
+      firstName,
+      lastName,
+    });
   };
 
   return (
-    <div className="dialog">
-      <input
-        type="text"
-        placeholder="First Name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Last Name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-      />
-      <button onClick={createChat}>Create Chat</button>
-      <button onClick={() => setIsDialogOpen(false)}>Cancel</button>
+    <div className="new-chat-dialog">
+      <div className="dialog-content">
+        <h2>{isEditMode ? 'Edit Chat' : 'New Chat'}</h2>
+        <input
+          type="text"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="First Name"
+        />
+        <input
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Last Name"
+        />
+        <div className="dialog-actions">
+          <button onClick={handleSave}>{isEditMode ? 'Save' : 'Create'}</button>
+          <button onClick={onCancel}>Cancel</button>
+        </div>
+      </div>
     </div>
   );
 }

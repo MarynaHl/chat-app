@@ -1,14 +1,14 @@
 import React from 'react';
 import '../styles/main.css';
 
-function Header({ toggleSocket }) {
+function Header() {
   return (
     <header className="app-header">
       <div className="profile">
-        <img src="/profile-pic.png" alt="Profile" />
+        <img src="/profile-pic.png" alt="Profile" className="profile-pic" />
         <span className="user-name">User Name</span>
       </div>
-      <button className="login-btn" onClick={toggleSocket}>Toggle Socket</button>
+      <button className="toggle-socket-btn">Toggle Socket</button>
     </header>
   );
 }
