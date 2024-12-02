@@ -18,11 +18,11 @@ const ChatList = ({ chats, onSelectChat, onDeleteChat, onCreateChat }) => {
       />
       <ul>
         {filteredChats.map((chat) => (
-          <li key={chat.id} onClick={() => onSelectChat(chat.id)}>
+          <li key={chat._id} onClick={() => onSelectChat(chat._id)}>
             {chat.firstName} {chat.lastName}
             <button onClick={(e) => {
               e.stopPropagation();
-              onDeleteChat(chat.id);
+              onDeleteChat(chat._id);
             }}>
               Delete
             </button>
