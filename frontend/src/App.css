@@ -46,35 +46,6 @@
   padding: 0;
 }
 
-.chat-input-container {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-top: 1px solid #ccc;
-}
-
-.chat-input {
-  flex: 1;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.send-button {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  margin-left: 10px;
-  cursor: pointer;
-}
-
-.send-button:hover {
-  background-color: #0056b3;
-}
-
 .chat-list li {
   padding: 15px;
   border-bottom: 1px solid #e0e0e0;
@@ -129,6 +100,7 @@
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
+  border-left: 1px solid #ccc;
 }
 
 .messages {
@@ -166,14 +138,15 @@
 /* Стиль для вводу повідомлень */
 .message-input-container {
   display: flex;
-  padding: 15px 10px;
+  align-items: center;
+  padding: 15px;
   border-top: 1px solid #ccc;
   background-color: #fff;
 }
 
 .message-input-container input {
   flex: 1;
-  padding: 15px;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 1rem;
@@ -202,40 +175,7 @@
   background-color: #0056b3;
 }
 
-/* Стиль для сповіщень */
-.toast-notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 15px 25px;
-  background-color: #28a745;
-  color: white;
-  font-size: 1rem;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  z-index: 1000;
-}
-
-/* Анімація для сповіщень */
-@keyframes fadein {
-  from {
-    opacity: 0;
-    bottom: 0;
-  }
-  to {
-    opacity: 1;
-    bottom: 20px;
-  }
-}
-
-@keyframes fadeout {
-  from {
-    opacity: 1;
-    bottom: 20px;
-  }
-  to {
-    opacity: 0;
-    bottom: 0;
-  }
+/* Спеціальні стилі для покращення зовнішнього вигляду */
+button, input, li {
+  transition: all 0.3s ease;
 }

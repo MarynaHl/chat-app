@@ -12,15 +12,16 @@ const MessageInput = ({ onSendMessage }) => {
   };
 
   return (
-    <form className="message-input" onSubmit={handleSubmit}>
+    <form className="message-input-container" onSubmit={handleSubmit}>
       <input
         type="text"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type your message..."
         required
+        className="message-input"
       />
-      <button type="submit">Send</button>
+      <button type="submit" className="send-button">Send</button>
     </form>
   );
 };

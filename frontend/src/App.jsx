@@ -11,6 +11,7 @@ const App = () => {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
+  const [selectedChatName, setSelectedChatName] = useState('');  // Додаємо стан для імені чату
 
   // Fetch chats when the component is mounted
   useEffect(() => {
@@ -28,8 +29,9 @@ const App = () => {
   }, []);
 
   // Select a chat and load its messages
-  const handleSelectChat = async (chatId) => {
+  const handleSelectChat = async (chatId, chatName) => {
     setSelectedChatId(chatId);
+    setSelectedChatName(chatName);  // Оновлюємо ім'я чату
     try {
       console.log(`Fetching messages for chat ID: ${chatId}`);
       const messagesData = await getMessages(chatId);
@@ -47,7 +49,7 @@ const App = () => {
         console.log(`Sending message: "${text}" to chat ID: ${selectedChatId}`);
         const newMessage = await sendMessage(selectedChatId, text);
         console.log('Message sent:', newMessage);
-        
+
         // Update the message list with the new message
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
@@ -113,7 +115,7 @@ const App = () => {
           onCreateChat={handleCreateChat}
           onDeleteChat={handleDeleteChat}
         />
-        <ChatWindow messages={messages} />
+        <ChatWindow messages={messages} chatName={selectedChatName} /> {/* Передаємо chatName */}
       </div>
       <MessageInput onSendMessage={handleSendMessage} />
       <ToastNotification message={toastMessage} />

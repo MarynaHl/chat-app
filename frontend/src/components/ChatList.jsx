@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 const ChatList = ({ chats, onSelectChat, onDeleteChat, onCreateChat }) => {
   const [search, setSearch] = useState('');
 
-  const filteredChats = chats.filter((chat) =>
-    `${chat.firstName} ${chat.lastName}`.toLowerCase().includes(search.toLowerCase())
+  const filteredChats = chats.filter(
+    (chat) => `${chat.firstName} ${chat.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
