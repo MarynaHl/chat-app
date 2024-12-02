@@ -1,30 +1,35 @@
 import React, { useState } from 'react';
 
-const ChatList = ({ chats, onSelectChat }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const ChatList = ({ chats, onSelectChat, onDeleteChat, onCreateChat }) => {
+  const [search, setSearch] = useState('');
 
-  const filteredChats = chats.filter(chat =>
-    `${chat.firstName} ${chat.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredChats = chats.filter(chat => 
+    chat.title.toLowerCase().includes(search.toLowerCase())
   );
-  const handleDeleteChat = (chatId) => {
-    if (window.confirm('Are you sure you want to delete this chat?')) {
-      deleteChat(chatId); // Викликаємо API для видалення
-    }
-  };
 
   return (
     <div className="chat-list">
       <h2>Chats</h2>
+      <input
+        type="text"
+        placeholder="Search chats..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
       <ul>
-        {chats.map(chat => (
-          <li key={chat.id}>
-            <span onClick={() => onSelectChat(chat.id)}>
-              {chat.firstName} {chat.lastName}
-            </span>
-            <button onClick={() => handleDeleteChat(chat.id)}>Delete</button>
+        {filteredChats.map(chat => (
+          <li key={chat.id} onClick={() => onSelectChat(chat.id)}>
+            {chat.title}
+            <button onClick={(e) => {
+              e.stopPropagation();
+              onDeleteChat(chat.id);
+            }}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
+      <button onClick={onCreateChat}>Add New Chat</button>
     </div>
   );
 };
