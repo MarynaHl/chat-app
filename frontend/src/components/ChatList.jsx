@@ -8,14 +8,18 @@ const ChatList = ({ chats, onSelectChat, onDeleteChat, onCreateChat, selectedCha
     (chat) => `${chat.firstName} ${chat.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Знаходимо вибраний чат
-  const selectedChat = chats.find(chat => chat._id === selectedChatId);
-
   return (
     <div className="chat-list">
-      {/* Заголовок, який залежить від вибраного чату */}
-      <h2>{selectedChat ? `Chat with ${selectedChat.firstName} ${selectedChat.lastName}` : 'Chats'}</h2>
-      
+      <div className="chat-list-header">
+        {/* Аватар користувача */}
+        <div className="user-avatar">
+          {/* Тут можна відобразити аватар користувача */}
+          <img src="https://via.placeholder.com/40" alt="User Avatar" className="avatar" />
+        </div>
+        {/* Кнопка Login */}
+        <button className="login-btn">Login</button>
+      </div>
+
       {/* Пошукове поле */}
       <input
         type="text"

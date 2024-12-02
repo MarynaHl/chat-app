@@ -25,6 +25,44 @@
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
+
+/* Стилі для заголовка в ChatList */
+.chat-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Стиль для аватара */
+.user-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-avatar .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;  /* Робимо аватар круглим */
+  object-fit: cover;  /* Вирізаємо зображення, щоб воно не виходило за межі */
+}
+
+/* Стиль для кнопки Login */
+.login-btn {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.login-btn:hover {
+  background-color: #0056b3;
+}
+
 .chat-list h2 {
   font-size: 1.5rem;
   color: #007bff;

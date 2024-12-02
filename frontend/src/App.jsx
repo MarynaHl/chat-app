@@ -116,7 +116,8 @@ const App = () => {
           onDeleteChat={handleDeleteChat}
           selectedChatId={selectedChatId}  // Передаємо ID вибраного чату
         />
-        <ChatWindow messages={messages} chatName={selectedChatName} />  {/* Передаємо ім'я вибраного чату */}
+        {/* Тепер передаємо selectedChatName в ChatWindow */}
+        <ChatWindow messages={messages} chatName={selectedChatName} />  
       </div>
       <MessageInput onSendMessage={handleSendMessage} />
       <ToastNotification message={toastMessage} />

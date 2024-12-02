@@ -4,7 +4,7 @@ const ChatWindow = ({ messages, chatName }) => {
   return (
     <div className="chat-window">
       {/* Виводимо ім'я чату або користувача */}
-      <h2>{chatName ? `Chat with ${chatName}` : 'Chat'}</h2>  {/* Відображаємо ім'я користувача */}
+      <h2>{chatName ? `Chat with ${chatName}` : 'Chat'}</h2>
       <div className="messages">
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.isUser ? 'user' : 'bot'}`}>
