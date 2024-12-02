@@ -53,7 +53,7 @@ const App = () => {
         // Оновлюємо список повідомлень
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-        // Оновлюємо повідомлення через 3 секунди
+        // Оновлюємо повідомлення через 3 секунди (відповідь від сервера з цитатою)
         setTimeout(async () => {
           console.log('Fetching updated messages...');
           const updatedMessages = await getMessages(selectedChatId);
