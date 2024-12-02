@@ -8,12 +8,12 @@ import './App.css';
 
 const App = () => {
   const [chats, setChats] = useState([]);
-  const [selectedChatId, setSelectedChatId] = useState(null);
+  const [selectedChatId, setSelectedChatId] = useState(null); // Вибраний чат
   const [messages, setMessages] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
-  const [selectedChatName, setSelectedChatName] = useState('');  // Додаємо стан для імені чату
+  const [selectedChatName, setSelectedChatName] = useState('');  // Стан для зберігання імені чату
 
-  // Fetch chats when the component is mounted
+  // Завантажуємо чати при завантаженні компонента
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -28,10 +28,10 @@ const App = () => {
     fetchChats();
   }, []);
 
-  // Select a chat and load its messages
+  // Вибір чату та завантаження його повідомлень
   const handleSelectChat = async (chatId, chatName) => {
-    setSelectedChatId(chatId);
-    setSelectedChatName(chatName);  // Оновлюємо ім'я чату
+    setSelectedChatId(chatId);  // Зберігаємо ID вибраного чату
+    setSelectedChatName(chatName);  // Зберігаємо ім'я вибраного чату
     try {
       console.log(`Fetching messages for chat ID: ${chatId}`);
       const messagesData = await getMessages(chatId);
@@ -42,7 +42,7 @@ const App = () => {
     }
   };
 
-  // Send a new message in the selected chat
+  // Відправка нового повідомлення
   const handleSendMessage = async (text) => {
     if (selectedChatId) {
       try {
@@ -50,10 +50,10 @@ const App = () => {
         const newMessage = await sendMessage(selectedChatId, text);
         console.log('Message sent:', newMessage);
 
-        // Update the message list with the new message
+        // Оновлюємо список повідомлень
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-        // Fetch the updated messages after 3 seconds to check for new ones
+        // Оновлюємо повідомлення через 3 секунди
         setTimeout(async () => {
           console.log('Fetching updated messages...');
           const updatedMessages = await getMessages(selectedChatId);
@@ -64,7 +64,7 @@ const App = () => {
           if (!latestMessage.isUser) {
             console.log('Displaying toast message:', latestMessage.text);
             setToastMessage(latestMessage.text);
-            setTimeout(() => setToastMessage(null), 3000);  // Hide toast after 3 seconds
+            setTimeout(() => setToastMessage(null), 3000);  // Сховати toast після 3 секунд
           }
         }, 3000);
       } catch (error) {
@@ -73,7 +73,7 @@ const App = () => {
     }
   };
 
-  // Create a new chat
+  // Створення нового чату
   const handleCreateChat = async () => {
     const firstName = prompt('Enter first name:');
     const lastName = prompt('Enter last name:');
@@ -89,13 +89,13 @@ const App = () => {
     }
   };
 
-  // Delete a chat
+  // Видалення чату
   const handleDeleteChat = async (chatId) => {
     if (window.confirm('Are you sure you want to delete this chat?')) {
       try {
         console.log(`Deleting chat with ID: ${chatId}`);
         await deleteChat(chatId);
-        setChats(chats.filter((chat) => chat._id !== chatId));  // Correctly filter by _id
+        setChats(chats.filter((chat) => chat._id !== chatId));  // Видаляємо чат за ID
         if (chatId === selectedChatId) {
           setSelectedChatId(null);
           setMessages([]);
@@ -111,11 +111,12 @@ const App = () => {
       <div className="chat-container">
         <ChatList
           chats={chats}
-          onSelectChat={handleSelectChat}
+          onSelectChat={handleSelectChat}  // Передаємо ID чату та ім'я
           onCreateChat={handleCreateChat}
           onDeleteChat={handleDeleteChat}
+          selectedChatId={selectedChatId}  // Передаємо ID вибраного чату
         />
-        <ChatWindow messages={messages} chatName={selectedChatName} /> {/* Передаємо chatName */}
+        <ChatWindow messages={messages} chatName={selectedChatName} />  {/* Передаємо ім'я вибраного чату */}
       </div>
       <MessageInput onSendMessage={handleSendMessage} />
       <ToastNotification message={toastMessage} />
