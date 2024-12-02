@@ -3,8 +3,8 @@ import ChatList from './components/ChatList';
 import ChatWindow from './components/ChatWindow';
 import MessageInput from './components/MessageInput';
 import ToastNotification from './components/ToastNotification';
-import { getChats, getMessages, sendMessage } from './services/api';
-import './App.css'; // Імпортуємо стилі
+import { getChats, getMessages, sendMessage, deleteChat, createChat } from './services/api';
+import './App.css';
 
 const App = () => {
   const [chats, setChats] = useState([]);
@@ -12,7 +12,6 @@ const App = () => {
   const [messages, setMessages] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
 
-  // Завантаження списку чатів при першому рендері
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -25,7 +24,6 @@ const App = () => {
     fetchChats();
   }, []);
 
-  // Обробка вибору чату
   const handleSelectChat = async (chatId) => {
     setSelectedChatId(chatId);
     try {
@@ -36,14 +34,12 @@ const App = () => {
     }
   };
 
-  // Надсилання повідомлення
   const handleSendMessage = async (text) => {
     if (selectedChatId) {
       try {
         const newMessage = await sendMessage(selectedChatId, text);
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-        // Показати сповіщення через 3 секунди після авто-відповіді
         setTimeout(async () => {
           const updatedMessages = await getMessages(selectedChatId);
           setMessages(updatedMessages);
@@ -60,13 +56,30 @@ const App = () => {
     }
   };
 
-  // Видалення чату
-  const handleDeleteChat = (chatId) => {
+  const handleCreateChat = async () => {
+    const firstName = prompt('Enter first name:');
+    const lastName = prompt('Enter last name:');
+    if (firstName && lastName) {
+      try {
+        const newChat = await createChat(firstName, lastName);
+        setChats([...chats, newChat]);
+      } catch (error) {
+        console.error('Error creating chat:', error);
+      }
+    }
+  };
+
+  const handleDeleteChat = async (chatId) => {
     if (window.confirm('Are you sure you want to delete this chat?')) {
-      setChats(chats.filter(chat => chat.id !== chatId)); // Видалення чату з локального стану
-      if (chatId === selectedChatId) {
-        setSelectedChatId(null); // Скидаємо вибір чату, якщо він видалений
-        setMessages([]); // Очищаємо повідомлення, якщо чат видалено
+      try {
+        await deleteChat(chatId);
+        setChats(chats.filter((chat) => chat.id !== chatId));
+        if (chatId === selectedChatId) {
+          setSelectedChatId(null);
+          setMessages([]);
+        }
+      } catch (error) {
+        console.error('Error deleting chat:', error);
       }
     }
   };
@@ -74,17 +87,15 @@ const App = () => {
   return (
     <div className="app">
       <div className="chat-container">
-        {/* Список чатів */}
-        <ChatList chats={chats} onSelectChat={handleSelectChat} deleteChat={handleDeleteChat} />
-        
-        {/* Вікно повідомлень */}
+        <ChatList
+          chats={chats}
+          onSelectChat={handleSelectChat}
+          onCreateChat={handleCreateChat}
+          onDeleteChat={handleDeleteChat}
+        />
         <ChatWindow messages={messages} />
       </div>
-
-      {/* Форма введення повідомлень */}
       <MessageInput onSendMessage={handleSendMessage} />
-
-      {/* Toast-сповіщення про нові повідомлення */}
       <ToastNotification message={toastMessage} />
     </div>
   );

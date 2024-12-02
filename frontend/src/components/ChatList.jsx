@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 const ChatList = ({ chats, onSelectChat, onDeleteChat, onCreateChat }) => {
   const [search, setSearch] = useState('');
 
-  const filteredChats = chats.filter(chat => 
-    chat.title.toLowerCase().includes(search.toLowerCase())
+  const filteredChats = chats.filter((chat) =>
+    `${chat.firstName} ${chat.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -17,9 +17,9 @@ const ChatList = ({ chats, onSelectChat, onDeleteChat, onCreateChat }) => {
         onChange={(e) => setSearch(e.target.value)}
       />
       <ul>
-        {filteredChats.map(chat => (
+        {filteredChats.map((chat) => (
           <li key={chat.id} onClick={() => onSelectChat(chat.id)}>
-            {chat.title}
+            {chat.firstName} {chat.lastName}
             <button onClick={(e) => {
               e.stopPropagation();
               onDeleteChat(chat.id);

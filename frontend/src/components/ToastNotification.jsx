@@ -5,7 +5,7 @@ const ToastNotification = ({ message }) => {
 
   return (
     <div className="toast-notification">
-      {message}
+      <p>{message}</p>
     </div>
   );
 };
