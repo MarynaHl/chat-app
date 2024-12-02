@@ -4,9 +4,9 @@ import ChatWindow from './components/ChatWindow';
 import MessageInput from './components/MessageInput';
 import ToastNotification from './components/ToastNotification';
 import { getChats, getMessages, sendMessage } from './services/api';
-import './App.css';
+import './App.css'; // Імпортуємо стилі
 
-function App() {
+const App = () => {
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -42,6 +42,18 @@ function App() {
       try {
         const newMessage = await sendMessage(selectedChatId, text);
         setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+        // Показати сповіщення через 3 секунди після авто-відповіді
+        setTimeout(async () => {
+          const updatedMessages = await getMessages(selectedChatId);
+          setMessages(updatedMessages);
+
+          const latestMessage = updatedMessages[updatedMessages.length - 1];
+          if (!latestMessage.isUser) {
+            setToastMessage(latestMessage.text);
+            setTimeout(() => setToastMessage(null), 3000);
+          }
+        }, 3000);
       } catch (error) {
         console.error('Error sending message:', error);
       }
@@ -50,19 +62,27 @@ function App() {
 
   return (
     <div className="app">
-      {/* Список чатів */}
-      <ChatList chats={chats} onSelectChat={handleSelectChat} />
+      <div className="chat-container">
+        {/* Список чатів */}
+        <div className="chat-list-container">
+          <ChatList chats={chats} onSelectChat={handleSelectChat} />
+        </div>
 
-      {/* Вікно повідомлень */}
-      <ChatWindow messages={messages} />
+        {/* Вікно повідомлень */}
+        <div className="chat-window-container">
+          <ChatWindow messages={messages} />
+        </div>
+      </div>
 
       {/* Форма введення повідомлень */}
-      <MessageInput onSendMessage={handleSendMessage} />
+      <div className="message-input-container">
+        <MessageInput onSendMessage={handleSendMessage} />
+      </div>
 
       {/* Toast-сповіщення про нові повідомлення */}
       <ToastNotification message={toastMessage} />
     </div>
   );
-}
+};
 
 export default App;
