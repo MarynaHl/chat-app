@@ -7,11 +7,11 @@ import { getChats, getMessages, sendMessage, deleteChat, createChat } from './se
 import './App.css';
 
 const App = () => {
-  const [chats, setChats] = useState([]);
-  const [selectedChatId, setSelectedChatId] = useState(null); // Вибраний чат
-  const [messages, setMessages] = useState([]);
-  const [toastMessage, setToastMessage] = useState(null);
-  const [selectedChatName, setSelectedChatName] = useState('');  // Стан для зберігання імені чату
+  const [chats, setChats] = useState([]); // Список чатів
+  const [selectedChatId, setSelectedChatId] = useState(null); // ID вибраного чату
+  const [messages, setMessages] = useState([]); // Повідомлення у вибраному чаті
+  const [toastMessage, setToastMessage] = useState(null); // Повідомлення для toast
+  const [selectedChatName, setSelectedChatName] = useState(''); // Назва вибраного чату
 
   // Завантажуємо чати при завантаженні компонента
   useEffect(() => {
@@ -29,14 +29,16 @@ const App = () => {
   }, []);
 
   // Вибір чату та завантаження його повідомлень
-  const handleSelectChat = async (chatId, chatName) => {
-    setSelectedChatId(chatId);  // Зберігаємо ID вибраного чату
-    setSelectedChatName(chatName);  // Зберігаємо ім'я вибраного чату
+  const handleSelectChat = async (chatId) => {
+    setSelectedChatId(chatId); // Зберігаємо вибраний ID чату
+    const selectedChat = chats.find((chat) => chat._id === chatId); // Знаходимо ім'я чату
+    setSelectedChatName(selectedChat ? `${selectedChat.firstName} ${selectedChat.lastName}` : '');
+
     try {
       console.log(`Fetching messages for chat ID: ${chatId}`);
       const messagesData = await getMessages(chatId);
       console.log('Fetched messages:', messagesData);
-      setMessages(messagesData);
+      setMessages(messagesData); // Оновлюємо повідомлення
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
@@ -60,11 +62,12 @@ const App = () => {
           console.log('Updated messages:', updatedMessages);
           setMessages(updatedMessages);
 
+          // Toast для автоматичної відповіді
           const latestMessage = updatedMessages[updatedMessages.length - 1];
           if (!latestMessage.isUser) {
             console.log('Displaying toast message:', latestMessage.text);
             setToastMessage(latestMessage.text);
-            setTimeout(() => setToastMessage(null), 3000);  // Сховати toast після 3 секунд
+            setTimeout(() => setToastMessage(null), 3000); // Сховати toast після 3 секунд
           }
         }, 3000);
       } catch (error) {
@@ -95,7 +98,7 @@ const App = () => {
       try {
         console.log(`Deleting chat with ID: ${chatId}`);
         await deleteChat(chatId);
-        setChats(chats.filter((chat) => chat._id !== chatId));  // Видаляємо чат за ID
+        setChats(chats.filter((chat) => chat._id !== chatId)); // Видаляємо чат за ID
         if (chatId === selectedChatId) {
           setSelectedChatId(null);
           setMessages([]);
@@ -111,13 +114,13 @@ const App = () => {
       <div className="chat-container">
         <ChatList
           chats={chats}
-          onSelectChat={handleSelectChat}  // Передаємо ID чату та ім'я
+          onSelectChat={handleSelectChat} // Передаємо ID чату та ім'я
           onCreateChat={handleCreateChat}
           onDeleteChat={handleDeleteChat}
-          selectedChatId={selectedChatId}  // Передаємо ID вибраного чату
+          selectedChatId={selectedChatId} // Передаємо ID вибраного чату
         />
-        {/* Тепер передаємо selectedChatName в ChatWindow */}
-        <ChatWindow messages={messages} chatName={selectedChatName} />  
+        {/* Передаємо ім'я чату у ChatWindow */}
+        <ChatWindow messages={messages} chatName={selectedChatName} />
       </div>
       <MessageInput onSendMessage={handleSendMessage} />
       <ToastNotification message={toastMessage} />

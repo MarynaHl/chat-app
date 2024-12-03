@@ -38,32 +38,39 @@ router.get('/chats/:id/messages', async (req, res) => {
 
 // Відправити нове повідомлення
 router.post('/chats/:id/messages', async (req, res) => {
-  try {
-    const { text, isUser } = req.body;
-    const newMessage = new Message({ chatId: req.params.id, text, isUser });
-    await newMessage.save();
-
-    if (isUser) {
-      setTimeout(async () => {
-        try {
-          const response = await axios.get('https://api.quotable.io/random');
-          const autoReply = new Message({
-            chatId: req.params.id,
-            text: response.data.content,
-            isUser: false,
-          });
-          await autoReply.save();
-        } catch (err) {
-          console.error('Error generating auto-reply:', err);
-        }
-      }, 3000);
+    try {
+      const { text, isUser } = req.body;
+  
+      // Зберігаємо повідомлення користувача
+      const newMessage = new Message({ chatId: req.params.id, text, isUser });
+      await newMessage.save();
+      console.log('User message saved:', newMessage);
+  
+      res.json(newMessage); // Надсилаємо відповідь про збережене повідомлення користувача
+  
+      // Генеруємо цитату через 3 секунди
+      if (isUser) {
+        setTimeout(async () => {
+          try {
+            const response = await axios.get('https://api.quotable.io/random');
+            const autoReply = new Message({
+              chatId: req.params.id,
+              text: response.data.content,
+              isUser: false,
+            });
+            await autoReply.save();
+            console.log('Auto-reply saved:', autoReply);
+          } catch (err) {
+            console.error('Error generating auto-reply:', err);
+          }
+        }, 3000);
+      }
+    } catch (err) {
+      console.error('Error sending message:', err);
+      res.status(400).json({ message: 'Error sending message' });
     }
-
-    res.json(newMessage);
-  } catch (err) {
-    res.status(400).json({ message: 'Error sending message' });
-  }
-});
+  });
+  
 
 // Видалення чату
 router.delete('/chats/:id', async (req, res) => {
