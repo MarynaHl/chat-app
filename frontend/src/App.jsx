@@ -52,7 +52,7 @@ const App = () => {
         const newMessage = await sendMessage(selectedChatId, text);
         console.log('Message sent:', newMessage);
 
-        // Оновлюємо список повідомлень
+        // Оновлюємо список повідомлень з новим повідомленням
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
         // Оновлюємо повідомлення через 3 секунди (відповідь від сервера з цитатою)
@@ -60,16 +60,18 @@ const App = () => {
           console.log('Fetching updated messages...');
           const updatedMessages = await getMessages(selectedChatId);
           console.log('Updated messages:', updatedMessages);
-          setMessages(updatedMessages);
 
-          // Toast для автоматичної відповіді
+          // Перевірка на останнє повідомлення
           const latestMessage = updatedMessages[updatedMessages.length - 1];
           if (!latestMessage.isUser) {
             console.log('Displaying toast message:', latestMessage.text);
             setToastMessage(latestMessage.text);
             setTimeout(() => setToastMessage(null), 3000); // Сховати toast після 3 секунд
           }
-        }, 3000);
+
+          // Оновлення стану повідомлень
+          setMessages(updatedMessages); 
+        }, 3000); // Затримка перед отриманням автовідповіді
       } catch (error) {
         console.error('Error sending message:', error);
       }

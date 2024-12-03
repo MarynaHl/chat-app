@@ -52,26 +52,21 @@ app.post('/api/send-message', async (req, res) => {
     const response = await axios.get('https://api.quotable.io/random');
     const quote = response.data.content;
 
-    // Зберігаємо автовідповідь через 3 секунди
-    setTimeout(async () => {
-      try {
-        const autoReply = new Message({
-          chatId: chatId,
-          text: quote,
-          isUser: false,
-        });
-        await autoReply.save();
-        console.log('Auto-reply saved:', autoReply);
+    // Зберігаємо автовідповідь
+    const autoReply = new Message({
+      chatId: chatId,
+      text: quote,
+      isUser: false,
+    });
+    await newMessage.save();
+    await autoReply.save();
+    console.log('Auto-reply saved:', autoReply);
 
-        res.status(200).json({
-          userMessage: newMessage,
-          autoReply: autoReply,
-        });
-      } catch (err) {
-        console.error('Error saving auto-reply:', err);
-        res.status(500).json({ message: 'Error generating auto-reply' });
-      }
-    }, 3000);
+    // Повертаємо обидва повідомлення клієнту
+    res.status(200).json({
+      userMessage: newMessage,
+      autoReply: autoReply,
+    });
   } catch (error) {
     console.error('Error handling message:', error);
     res.status(500).json({ message: 'Error processing message' });
