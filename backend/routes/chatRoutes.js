@@ -1,87 +1,62 @@
 const express = require('express');
 const Chat = require('../models/Chat');
 const Message = require('../models/Message');
-const axios = require('axios');
+
 const router = express.Router();
 
-// Отримати всі чати
+// Отримати список чатів
 router.get('/chats', async (req, res) => {
   try {
     const chats = await Chat.find();
-    res.json(chats);
-  } catch (err) {
-    console.error('Error fetching chats:', err);
+    res.status(200).json(chats);
+  } catch (error) {
     res.status(500).json({ message: 'Error fetching chats' });
   }
 });
 
 // Створити новий чат
 router.post('/chats', async (req, res) => {
+  const { firstName, lastName } = req.body;
   try {
-    const { firstName, lastName } = req.body;
     const newChat = new Chat({ firstName, lastName });
     await newChat.save();
-    res.json(newChat);
-  } catch (err) {
-    console.error('Error creating chat:', err);
-    res.status(400).json({ message: 'Error creating chat' });
+    res.status(201).json(newChat);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating chat' });
   }
 });
 
-// Отримати всі повідомлення для чату
-router.get('/chats/:id/messages', async (req, res) => {
+// Отримати повідомлення для конкретного чату
+router.get('/chats/:chatId/messages', async (req, res) => {
+  const { chatId } = req.params;
   try {
-    const messages = await Message.find({ chatId: req.params.id }).sort({ createdAt: 1 }); // Сортування за датою
-    res.json(messages);
-  } catch (err) {
-    console.error('Error fetching messages:', err);
+    const messages = await Message.find({ chatId });
+    res.status(200).json(messages);
+  } catch (error) {
     res.status(500).json({ message: 'Error fetching messages' });
   }
 });
 
-// Відправити нове повідомлення
-router.post('/chats/:id/messages', async (req, res) => {
+// Відправити повідомлення в конкретний чат
+router.post('/chats/:chatId/messages', async (req, res) => {
+  const { chatId } = req.params;
+  const { text } = req.body;
   try {
-    const { text, isUser } = req.body;
-
-    // Зберігаємо повідомлення користувача
-    const newMessage = new Message({ chatId: req.params.id, text, isUser });
+    const newMessage = new Message({ chatId, text, isUser: true });
     await newMessage.save();
-    console.log('User message saved:', newMessage);
-
-    res.json(newMessage); // Надсилаємо відповідь про збережене повідомлення користувача
-
-    // Генеруємо цитату через 3 секунди
-    if (isUser) {
-      setTimeout(async () => {
-        try {
-          const response = await axios.get('https://api.quotable.io/random');
-          const autoReply = new Message({
-            chatId: req.params.id,
-            text: response.data.content,
-            isUser: false,
-          });
-          await autoReply.save();
-          console.log('Auto-reply saved:', autoReply);
-        } catch (err) {
-          console.error('Error generating auto-reply:', err);
-        }
-      }, 3000);
-    }
-  } catch (err) {
-    console.error('Error sending message:', err);
-    res.status(400).json({ message: 'Error sending message' });
+    res.status(201).json(newMessage);
+  } catch (error) {
+    res.status(500).json({ message: 'Error sending message' });
   }
 });
 
-// Видалення чату
-router.delete('/chats/:id', async (req, res) => {
+// Видалити чат
+router.delete('/chats/:chatId', async (req, res) => {
+  const { chatId } = req.params;
   try {
-    await Chat.findByIdAndDelete(req.params.id);
-    await Message.deleteMany({ chatId: req.params.id });
-    res.json({ message: 'Chat deleted' });
-  } catch (err) {
-    console.error('Error deleting chat:', err);
+    await Chat.findByIdAndDelete(chatId);
+    res.status(200).json({ message: 'Chat deleted' });
+  } catch (error) {
     res.status(500).json({ message: 'Error deleting chat' });
   }
 });

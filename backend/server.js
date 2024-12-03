@@ -7,7 +7,11 @@ require('dotenv').config();
 const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type',
+}));
 app.use(express.json());
 
 // Підключення до MongoDB
@@ -15,8 +19,6 @@ mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(async () => {
     console.log('MongoDB connected');
-
-    // Перевірка та створення початкових чатів
     const Chat = require('./models/Chat');
     const existingChats = await Chat.find();
     if (existingChats.length === 0) {
@@ -28,53 +30,52 @@ mongoose
       console.log('Predefined chats created');
     }
   })
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
+  .catch(err => console.error('Error connecting to MongoDB:', err));
 
-// Основні маршрути
+// Підключення маршрутів чату
 app.use('/api', chatRoutes);
 
-// Новий ендпоінт для отримання автовідповіді
+// Тестовий маршрут для перевірки роботи API
+app.get('/api', (req, res) => {
+  res.status(200).json({ message: 'API is working' });
+});
+
+// Новий ендпоінт для автовідповіді
 app.post('/api/send-message', async (req, res) => {
   const { chatId, message } = req.body;
-
   try {
-    // Зберігаємо повідомлення користувача
+    // Створення повідомлення користувача
     const Message = require('./models/Message');
-    const newMessage = new Message({
-      chatId: chatId,
-      text: message,
-      isUser: true,
-    });
-    await newMessage.save();
-    console.log('User message saved:', newMessage);
+    const userMessage = new Message({ chatId, text: message, isUser: true });
+    await userMessage.save();
+    console.log('User message saved:', userMessage);
 
-    // Отримуємо цитату з Quotable API
+    // Отримання цитати через API для автовідповіді
     const response = await axios.get('https://api.quotable.io/random');
-    const quote = response.data.content;
+    const autoReplyText = response.data.content;
 
-    // Зберігаємо автовідповідь
+    // Створення автовідповіді
     const autoReply = new Message({
-      chatId: chatId,
-      text: quote,
+      chatId,
+      text: autoReplyText,
       isUser: false,
+      isAutoReply: true, // Додаємо позначку, що це автовідповідь
     });
-    await newMessage.save();
     await autoReply.save();
     console.log('Auto-reply saved:', autoReply);
 
-    // Повертаємо обидва повідомлення клієнту
-    res.status(200).json({
-      userMessage: newMessage,
-      autoReply: autoReply,
-    });
+    // Відправка обох повідомлень (користувацького та автовідповіді) назад на фронтенд
+    res.status(200).json({ userMessage, autoReply });
   } catch (error) {
     console.error('Error handling message:', error);
     res.status(500).json({ message: 'Error processing message' });
   }
 });
 
-// Запуск сервера
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Обробка неіснуючих маршрутів
+app.use((req, res) => {
+  res.status(404).json({ message: 'Endpoint not found' });
 });
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
